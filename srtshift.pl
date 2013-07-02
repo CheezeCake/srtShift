@@ -27,21 +27,26 @@
 use strict;
 #use diagnostics;
 
-my $ARGC = scalar(@ARGV);
+my $ARGC = scalar @ARGV;
 (($ARGC >= 3) and ($ARGC <= 4)) or die "invalid argument list.\n";
 
 ($ARGV[0] =~ /\+|-/) or die "invalid argument: $ARGV[0] (expected + or -).\n";
 my $sign = $ARGV[0];
 
-my @units = ('h', 'm[^s]', 's', 'ms');
-my @values;
+my %units = (
+                "h" => "h",
+                "m" => "m[^s]",
+                "s" => "s",
+                "ms" => "ms"
+            );
+my %values;
 
-foreach my $symbol (@units)
+while((my $symbol, my $exp) = each %units)
 {
-	my $val = $ARGV[1];
+    my $val = $ARGV[1];
 
-	$val =~ s/^(\d+\D)*(\d+)$symbol.*$/$2/ or $val = 0;
-	push @values, $val;
+    $val =~ s/^(\d+\D)*(\d+)$exp.*$/$2/ or $val = 0;
+    $values{$symbol} = $val;
 }
 
 (-f $ARGV[2]) or die "$ARGV[2]: no such file.\n";
@@ -52,6 +57,6 @@ my $out = ($ARGC == 4) ? $ARGV[3] : "new_".$ARGV[2];
 open IN, "< $in" or die "cannot open $in: $!.\n";
 while (my $line = <IN>)
 {
-	;
+    ;
 }
 close IN;
