@@ -1,1 +1,7 @@
-Time shift srt files.
+SrtShift
+
+Small script made while learning Perl.
+
+examples:
+srtshift + 3s400ms sub.srt #add 3 sec and 400ms, output=new_sub.srt
+srtshift - 2m sub.srt out.srt #remove 2 minutes, output=out.srt
