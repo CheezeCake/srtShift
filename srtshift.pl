@@ -25,7 +25,6 @@
 # THE SOFTWARE.
 
 use strict;
-#use diagnostics;
 
 my $ARGC = scalar @ARGV;
 (($ARGC >= 3) and ($ARGC <= 4)) or die "invalid argument list.\n";
@@ -43,12 +42,6 @@ foreach my $exp (@units)
     $val =~ s/^(\d+\D+)*(\d+)$exp.*$/$2/ or $val = 0;
     push @values, $val;
 }
-
-foreach my $n (@values)
-{
-    print $n, "\n";
-}
-print "\n";
 
 (-f $ARGV[2]) or die "$ARGV[2]: no such file.\n";
 my $in = $ARGV[2];
@@ -70,10 +63,17 @@ while(my $line = <IN>)
             for(my $j = 3; $j >= 0; $j--)
             {
                 my $n = ($sign eq '-') ? -$values[$j] : $values[$j];
-                my $val = $tokens[$i+$j]+$n;
+                my $val = $tokens[$i+$j]+$n+$carry;
+                $carry = 0;
 
                 if($j == 3)
                 {
+                    if($val > 999)
+                    {
+                        $carry = int($val/1000);
+                        $val = $val%1000;
+                    }
+
                     my $length = length $val;
                     if($length != 3) { $val = ('0'x(3-$length)).$val; }
 
@@ -81,6 +81,12 @@ while(my $line = <IN>)
                 }
                 else
                 {
+                    if(($j != 1) and ($val > 60)) #not for hours
+                    {
+                        $carry = $val/60;
+                        $val = $val%60;
+                    }
+
                     if(length $val == 1) { $val = '0'.$val; }
 
                     my $s = ':';
