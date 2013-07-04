@@ -27,18 +27,6 @@
 use strict;
 #use diagnostics;
 
-sub add_leading_zeros
-{
-    my ($val, $n) = @_;
-
-    for(my $i = 0; $i < $n; $i++)
-    {
-        $val = '0'.$val;
-    }
-
-    return $val;
-}
-
 my $ARGC = scalar @ARGV;
 (($ARGC >= 3) and ($ARGC <= 4)) or die "invalid argument list.\n";
 
@@ -77,27 +65,27 @@ while(my $line = <IN>)
         my $nline = "";
         for(my $i = 4; $i >= 0; $i -= 4)
         {
+            my $carry = 0;
             $nline = (($i == 0) ? ' --> ' : $tokens[8]).$nline;
             for(my $j = 3; $j >= 0; $j--)
             {
                 my $n = ($sign eq '-') ? -$values[$j] : $values[$j];
                 my $val = $tokens[$i+$j]+$n;
 
-                if($j == 2)
+                if($j == 3)
                 {
-                    if(length $val == 1) { $val = &add_leading_zeros($val, 1); }
-                    $nline = $val.','.$nline;
-                }
-                elsif($j != 3)
-                {
-                    if(length $val == 1) { $val = &add_leading_zeros($val, 1); }
-                    $nline = $val.':'.$nline;
+                    my $length = length $val;
+                    if($length != 3) { $val = ('0'x(3-$length)).$val; }
+
+                    $nline = $val.$nline;
                 }
                 else
                 {
-                    my $length = length $val;
-                    if($length != 3) { $val = &add_leading_zeros($val, 3-$length); }
-                    $nline = $val.$nline;
+                    if(length $val == 1) { $val = '0'.$val; }
+
+                    my $s = ':';
+                    if($j == 2) { $s = ','; }
+                    $nline = $val.$s.$nline;
                 }
             }
         }
