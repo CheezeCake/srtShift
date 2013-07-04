@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 
 # srtShift is a simple tool to shift time or resync srt subtitle files (SubRip)
 
@@ -49,6 +49,7 @@ my $out = ($ARGC == 4) ? $ARGV[3] : "new_".$ARGV[2];
 
 
 open IN, "< $in" or die "cannot open $in: $!.\n";
+open OUT, "> $out" or die "cannot create the file $out: $!.\n";
 while(my $line = <IN>)
 {
     if($line =~ s/^(\d\d):(\d\d):(\d\d),(\d{3}).*(\d\d):(\d\d):(\d\d),(\d{3})(.*)$/$1#$2#$3#$4#$5#$6#$7#$8#$9/)
@@ -96,11 +97,13 @@ while(my $line = <IN>)
             }
         }
 
-        print $nline, "\n";
+        print OUT $nline, "\n";
     }
     else
     {
-        print $line;
+        print OUT $line;
     }
 }
+
 close IN;
+close OUT;
