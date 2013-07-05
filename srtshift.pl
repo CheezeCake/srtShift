@@ -27,7 +27,7 @@
 use strict;
 
 my $ARGC = scalar @ARGV;
-(($ARGC >= 3) and ($ARGC <= 4)) or die "invalid argument list.\n";
+(($ARGC == 3) or ($ARGC == 4)) or die "invalid argument list.\n";
 
 ($ARGV[0] =~ /\+|-/) or die "invalid argument: $ARGV[0] (expected + or -).\n";
 my $sign = $ARGV[0];
