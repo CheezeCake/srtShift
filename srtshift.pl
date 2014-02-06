@@ -34,6 +34,7 @@ my $sign = $ARGV[0];
 
 my @units = ("h", "m([^s]|\$)", "s", "ms");
 my @values;
+my $diff = 0;
 
 foreach my $exp (@units)
 {
@@ -42,6 +43,18 @@ foreach my $exp (@units)
     $val =~ s/^(\d+\D+)*(\d+)$exp.*$/$2/ or $val = 0;
     push @values, $val;
 }
+
+for(my $i = 0; $i <= 3; $i++)
+{
+    my $n =  $values[$i];
+
+    if($i == 0) { $n *= 3600; }
+    elsif ($i == 1) { $n *= 60; }
+    elsif ($i == 3) { $n /= 1000; }
+    $diff += $n;
+}
+
+if($sign eq '-') { $diff = -$diff; }
 
 (-f $ARGV[2]) or die "$ARGV[2]: no such file.\n";
 my $in = $ARGV[2];
@@ -55,48 +68,45 @@ while(my $line = <IN>)
     if($line =~ s/^(\d\d):(\d\d):(\d\d),(\d{3}).*(\d\d):(\d\d):(\d\d),(\d{3})(.*)$/$1#$2#$3#$4#$5#$6#$7#$8#$9/)
     {
         chomp $line;
-        my @tokens = split "#", $line;
-        my $nline = "";
-        for(my $i = 4; $i >= 0; $i -= 4)
+        my @tokens = split '#', $line;
+        my $nline = '';
+        for(my $i = 0; $i <= 4; $i += 4)
         {
-            my $carry = 0;
-            $nline = (($i == 0) ? ' --> ' : $tokens[8]).$nline;
-            for(my $j = 3; $j >= 0; $j--)
+            if($i == 4) { $nline .= ' -- > '; }
+            my $val = 0.0;
+
+            for(my $j = 0; $j <= 3; $j++)
             {
-                my $n = ($sign eq '-') ? -$values[$j] : $values[$j];
-                my $val = $tokens[$i+$j]+$n+$carry;
-                $carry = 0;
+                my $n = $tokens[$i+$j];
 
-                if($j == 3)
-                {
-                    if($val > 999)
-                    {
-                        $carry = int($val/1000);
-                        $val = $val%1000;
-                    }
-
-                    my $length = length $val;
-                    if($length != 3) { $val = ('0'x(3-$length)).$val; }
-
-                    $nline = $val.$nline;
-                }
-                else
-                {
-                    if(($j != 1) and ($val > 60)) #not for hours
-                    {
-                        $carry = $val/60;
-                        $val = $val%60;
-                    }
-
-                    if(length $val == 1) { $val = '0'.$val; }
-
-                    my $s = ':';
-                    if($j == 2) { $s = ','; }
-                    $nline = $val.$s.$nline;
-                }
+                if($j == 0) { $n *= 3600; }
+                elsif ($j == 1) { $n *= 60; }
+                elsif ($j == 3) { $n /= 1000; }
+                $val += $n;
             }
+
+            my $new = $val+$diff;
+            if($new < 0) { $new = 0; }
+            my $tmp;
+
+            $tmp = int($new/3600);
+            $nline .= sprintf('%.2d', $tmp).':';
+            $new -= $tmp;
+
+            $tmp = int($new/60);
+            $nline .= sprintf('%.2d', $tmp).':';
+            $new -= $tmp;
+
+            $tmp = int($new);
+            $nline .= sprintf('%.2d', $tmp).',';
+            my $v = int($new);
+            $new *= 1000;
+            $new -= $v*1000;
+
+            $nline .= sprintf('%.3d', $new);
         }
 
+        $nline .= $tokens[8];
         print OUT $nline, "\n";
     }
     else
