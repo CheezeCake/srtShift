@@ -54,6 +54,7 @@ for(my $i = 0; $i <= 3; $i++)
     $diff += $n;
 }
 
+
 if($sign eq '-') { $diff = -$diff; }
 
 (-f $ARGV[2]) or die "$ARGV[2]: no such file.\n";
