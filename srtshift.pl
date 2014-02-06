@@ -91,11 +91,11 @@ while(my $line = <IN>)
 
             $tmp = int($new/3600);
             $nline .= sprintf('%.2d', $tmp).':';
-            $new -= $tmp;
+            $new -= $tmp*3600;
 
             $tmp = int($new/60);
             $nline .= sprintf('%.2d', $tmp).':';
-            $new -= $tmp;
+            $new -= $tmp*60;
 
             $tmp = int($new);
             $nline .= sprintf('%.2d', $tmp).',';
