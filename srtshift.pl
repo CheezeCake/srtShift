@@ -73,7 +73,7 @@ while(my $line = <IN>)
         my $nline = '';
         for(my $i = 0; $i <= 4; $i += 4)
         {
-            if($i == 4) { $nline .= ' -- > '; }
+            if($i == 4) { $nline .= ' --> '; }
             my $val = 0.0;
 
             for(my $j = 0; $j <= 3; $j++)
