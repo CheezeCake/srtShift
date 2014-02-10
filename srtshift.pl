@@ -98,13 +98,8 @@ while(my $line = <IN>)
             $nline .= sprintf('%.2d', $tmp).':';
             $new -= $tmp*60;
 
-            $tmp = int($new);
-            $nline .= sprintf('%.2d', $tmp).',';
-            my $v = int($new);
-            $new *= 1000;
-            $new -= $v*1000;
-
-            $nline .= sprintf('%.3d', $new);
+            $new =~ s/\./,/;
+            $nline .= $new;
         }
 
         $nline .= $tokens[8];
